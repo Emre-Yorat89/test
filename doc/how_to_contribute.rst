@@ -1,14 +1,28 @@
+<<<<<<< HEAD
 .. SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 ..
 .. SPDX-License-Identifier: CC-BY-4.0
+=======
+..
+  SPDX-FileCopyrightText: 2021 The PyPSA meets Earth authors
+
+  SPDX-License-Identifier: CC-BY-4.0
+>>>>>>> dist_main
 
 .. _how_to_contribute:
 
 ##########################################
+<<<<<<< HEAD
 How to Сontribute
 ##########################################
 
 Contributions are welcome, and they are greatly appreciated!
+=======
+Contribute
+##########################################
+
+Contributions are welcome, and they are greatly appreciated! 
+>>>>>>> dist_main
 Every little bit helps, and you always earn credits.
 
 You can contribute on the code side in many ways:
@@ -24,8 +38,11 @@ You can contribute on the code side in many ways:
 Code
 ====
 
+<<<<<<< HEAD
 Linting and pre-commit
 ----------------------
+=======
+>>>>>>> dist_main
 For every code contribution you should run `pre-commit <https://pre-commit.com/index.html>`_.
 This will lint, format and check your code contributions against our guidelines
 (e.g. we use `Black <https://github.com/psf/black>`_ as code style
@@ -36,6 +53,7 @@ and aim for `REUSE compliance <https://reuse.software/>`_):
   * To automatically activate ``pre-commit`` on every ``git commit``: Run ``pre-commit install``
   * To manually run it: ``pre-commit run --all``
 
+<<<<<<< HEAD
 Testing
 -------
 Add a new test if you want to contribute new functionality to the config.
@@ -139,6 +157,25 @@ VScode provides a so called Liveserver extension such that the html file can be 
 No-Code
 ========
 Instead of contributing code there are alternatives to support the PyPSA-Earth goals.
+=======
+Add a new test if you want to contribute new functionality to the config.
+We perform currently *multiple* integration tests which means various workflows need to work.
+All test configs are build by updating the ``config.tutorial.yaml`` with the configs in ``pypysa-earth/test/*.yaml``.
+
+  * You can test your contribution locally with ``snakemake --cores 4 run_tests``. This will build test configs and executes them.
+  * Run ``snakemake -j1 build_test_configs`` to build and analyse locally the test configs.
+
+To contribute a test:
+
+1. Provide a new test in ``test/<new test>.yaml``, or adjust one of the existing ones. These tests update the config.tutorial.yaml to test other options e.g. landlock countries. 
+2. Add a new test config path to the ``rule build_all_test`` in the ``Snakefile``.
+3. If your functionality should be tested in the CI for every pull request, add a respective code in ``.github/workflows/ci-linux.yaml``. We test all functionalities only for Linux while providing a general test for windows and mac.
+
+
+No-Code
+========
+Instead of contributing code there are alternatives to support the PyPSA-Distribution goals.
+>>>>>>> dist_main
 You can fund projects, supervise people, support us with outreach activities or events.
 Check out our `website <https://pypsa-meets-earth.github.io>`_ for more details.
 
@@ -152,6 +189,10 @@ A simple way to explore opportunities for collaboration is to join our meetings.
 - `List of meetings and times <https://github.com/pypsa-meets-earth/pypsa-earth#get-involved>`_
 
 - **Discord**
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> dist_main
   - Chat with the community, team up on features, exchange with developers, code in voice channels
   - `Discord invitation link <https://discord.gg/AnuJBk23FU>`_

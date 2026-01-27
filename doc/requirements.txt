@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+=======
+# SPDX-FileCopyrightText: : 2019-2021 The PyPSA-Eur Authors
+>>>>>>> dist_main
 #
 # SPDX-License-Identifier: CC0-1.0
 
 setuptools
+<<<<<<< HEAD
 sphinx
 sphinx_book_theme
 sphinxcontrib-bibtex
@@ -18,6 +23,19 @@ matplotlib
 tabula-py
 
 cartopy
+=======
+
+sphinx
+sphinx_rtd_theme
+setuptools<58.3.0
+
+pypsa
+powerplantmatching>=0.4.8
+atlite>=0.2.2
+dask<=2021.3.1
+
+# cartopy
+>>>>>>> dist_main
 scikit-learn
 pycountry
 pyyaml
@@ -26,6 +44,7 @@ memory_profiler
 tables
 descartes
 
+<<<<<<< HEAD
 rioxarray
 googledrivedownloader>=1.1
 
@@ -41,3 +60,10 @@ graphviz
 
 fake_useragent
 currencyconverter
+=======
+esy-osm-pbf
+esy-osmfilter
+rioxarray
+
+gitpython
+>>>>>>> dist_main

@@ -1,5 +1,9 @@
 blank_issues_enabled: false
 contact_links:
 - name: Discussion board
+<<<<<<< HEAD
   url: https://github.com/pypsa-meets-earth/pypsa-earth/discussions
+=======
+  url: https://github.com/pypsa-meets-earth/pypsa-distribution/discussions
+>>>>>>> dist_main
   about: Please ask and answer general usage questions here.

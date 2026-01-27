@@ -28,7 +28,11 @@ dependencies:
 - pyscipopt
 - lxml
 - numpy<2
+<<<<<<< HEAD
 - pandas
+=======
+- pandas<3.0
+>>>>>>> dist_main
 - geopandas>=1
 - fiona>=1.10
 - xarray>=2023.11.0, <=2025.01.2
@@ -81,3 +85,7 @@ dependencies:
 - pip:
   - currencyconverter
   - googledrivedownloader>=1.1
+<<<<<<< HEAD
+=======
+  - rampdemand
+>>>>>>> dist_main

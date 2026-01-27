@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 # -*- coding: utf-8 -*-
+=======
+>>>>>>> dist_main
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -22,6 +25,7 @@ import sys
 from git import Repo
 
 sys.path.insert(0, os.path.abspath("../scripts"))
+<<<<<<< HEAD
 for p in sys.path:
     print(p)
 
@@ -69,6 +73,17 @@ release = "0.8.0"
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
+=======
+
+# -- Project information -----------------------------------------------------
+
+project = "PyPSA-Distribution"
+author = "Davide Fioriti"
+copyright = f"{datetime.datetime.today().year}, {author}"
+
+# The full version, including alpha/beta/rc tags
+release = "0.0.2"
+>>>>>>> dist_main
 
 # -- General configuration ---------------------------------------------------
 
@@ -76,7 +91,10 @@ pygments_style = "sphinx"
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
+<<<<<<< HEAD
     "myst_parser",
+=======
+>>>>>>> dist_main
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
@@ -84,7 +102,10 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.graphviz",
+<<<<<<< HEAD
     "sphinx_copybutton",
+=======
+>>>>>>> dist_main
     # "sphinx.ext.pngmath",
     # "sphinxcontrib.tikz",
     # "rinoh.frontend.sphinx",
@@ -130,6 +151,7 @@ master_doc = "index"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
+<<<<<<< HEAD
 html_theme = "sphinx_book_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -144,10 +166,14 @@ html_theme_options = {
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = "PyPSA-Earth"
+=======
+html_theme = "sphinx_rtd_theme"
+>>>>>>> dist_main
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
+<<<<<<< HEAD
 # html_static_path = ["_static"]
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
@@ -156,6 +182,9 @@ html_short_title = "PyPSA-Earth"
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "https://github.com/pypsa-meets-earth/pypsa-meets-earth.github.io/raw/main/assets/img/logo.png"
+=======
+html_static_path = ["_static"]
+>>>>>>> dist_main
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -165,10 +194,17 @@ html_logo = "https://github.com/pypsa-meets-earth/pypsa-meets-earth.github.io/ra
 texinfo_documents = [
     (
         master_doc,
+<<<<<<< HEAD
         "PyPSA-Earth",
         "PyPSA-Earth Documentation",
         author,
         "PyPSA-Earth",
+=======
+        "pypsa_earth",
+        "pypsa-earth Documentation",
+        author,
+        "pypsa-earth",
+>>>>>>> dist_main
         "One line description of project.",
         "Miscellaneous",
     ),
@@ -184,8 +220,12 @@ man_pages = [(master_doc, "pypsa_earth", "pypsa_earth Documentation", [author], 
 # man_show_urls = False
 
 # Example configuration for intersphinx: refer to the Python standard library.
+<<<<<<< HEAD
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 copybutton_prompt_text = r"\$"  # Matches the pattern .../something $
 copybutton_prompt_is_regexp = True
 copybutton_only_copy_prompt_lines = True
+=======
+intersphinx_mapping = {"https://docs.python.org/": None}
+>>>>>>> dist_main

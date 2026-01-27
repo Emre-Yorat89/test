@@ -1,21 +1,31 @@
+<<<<<<< HEAD
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: CC0-1.0
+=======
+>>>>>>> dist_main
 
 # Byte-compiled / optimized / DLL files
 **/__pycache__
 *.py[cod]
 *$py.class
+<<<<<<< HEAD
 
 # Jupyter-related files
 .ipynb_checkpoints
 
 # General untracked file formats
 *.idea
+=======
+.ipynb_checkpoints
+
+# General untracked file formats
+>>>>>>> dist_main
 *.log
 **/pbf
 *.pbf
 *.zip
+<<<<<<< HEAD
 *.png
 *.done
 *.tif
@@ -66,10 +76,48 @@ configs/scenarios/config.*.yaml
 .vscode
 *.code-workspace
 *.vscode/settings.json
+=======
+
+# Untracked files
+config.yaml
+dag.svg
+
+# Untracked folders (and files within)
+img/
+.snakemake/
+benchmarks/
+cutouts/
+data/
+resources/
+results/
+networks/
+test/tmp/
+
+# track resources/powerplants.csv
+!resources/powerplants.csv
+!resources/demand/microgrid_load.csv
+
+# track data/ramp/
+!data/ramp/
+!data/ramp/**
+!data/ramp/*.xlsx
+
+# Untrack test doc builds
+doc/_build
+
+# VS code related
+*.vscode
+doc/*.vscode/settings.json
+*.vscode/settings.json
+*.code-workspace
+>>>>>>> dist_main
 
 # Additional debugging folders
 backup*
 screenlog*
+<<<<<<< HEAD
 
 # Exclude specific file paths
 !data/demand/unsd/paths/Energy_Statistics_Database.xlsx
+=======
+>>>>>>> dist_main

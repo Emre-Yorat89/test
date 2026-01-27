@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -7,6 +8,10 @@
 """
 Adds electrical generators, load and existing hydro storage units to a base
 network.
+=======
+"""
+Adds electrical generators, load and storage units to a each microgrids part of a base network.
+>>>>>>> dist_main
 
 Relevant Settings
 -----------------
@@ -15,6 +20,7 @@ Relevant Settings
 
     costs:
         year:
+<<<<<<< HEAD
         technology_data_version:
         discountrate:
         output_currency:
@@ -91,11 +97,49 @@ It further adds extendable ``generators`` with **zero** capacity for
 - additional open- and combined-cycle gas turbines (if ``OCGT`` and/or ``CCGT`` is listed in the config setting ``electricity: extendable_carriers``)
 """
 
+=======
+        USD2013_to_EUR2013:
+        dicountrate:
+    electricity:
+        max_hours:
+        conventional_carriers:
+        extendable_carriers:
+    tech_modelling:
+        general_vre:
+        storage_techs:
+        load_carries:
+
+Inputs
+------
+- ``data/costs.csv``: The database of cost assumptions for all included technologies for specific years from various sources;
+e.g. discount rate, lifetime, investment (CAPEX), fixed operation and maintenance (FOM), variable operation and maintenance (VOM),
+fuel costs, efficiency, carbon-dioxide intensity.
+- ``resources/powerplants.csv``: confer :ref:`powerplants`
+- ``resources/profile_{}.nc``: all technologies in ``config["renewables"].keys()``, confer :ref:`renewableprofiles`
+- ``resources/demand/microgrid_load.csv``: microgrid electric demand 
+- ``networks/base.nc``: confer :ref:`base`
+     
+Outputs
+-------
+- ``networks/elec.nc``: output network
+
+Description
+-----------
+The rule :mod:`add_electricity` takes as input the network generated in the rule "create_network" and adds to it both renewable and conventional generation, storage units and load, resulting in a network that is stored in ``networks/elec.nc``. 
+"""
+
+import logging
+import os
+
+import geopandas
+import geopandas as gpd
+>>>>>>> dist_main
 import numpy as np
 import pandas as pd
 import powerplantmatching as pm
 import pypsa
 import xarray as xr
+<<<<<<< HEAD
 from _helpers import (
     apply_currency_conversion,
     build_currency_conversion_cache,
@@ -116,11 +160,24 @@ logger = create_logger(__name__)
 def normed(s):
     return s / s.sum()
 
+=======
+from _helpers_dist import configure_logging, sets_path_to_root
+from shapely.geometry import Point, Polygon
+
+logger = logging.getLogger(__name__)
+
+idx = pd.IndexSlice
+
+>>>>>>> dist_main
 
 def calculate_annuity(n, r):
     """
     Calculate the annuity factor for an asset with lifetime n years and
+<<<<<<< HEAD
     discount rate of r, e.g. annuity(20, 0.05) * 20 = 1.6.
+=======
+    discount rate of r, e.g. annuity(20, 0.05) * 20 = 1.6
+>>>>>>> dist_main
     """
     if isinstance(r, pd.Series):
         return pd.Series(1 / n, index=r.index).where(
@@ -146,6 +203,7 @@ def _add_missing_carriers_from_costs(n, costs, carriers):
     n.import_components_from_dataframe(emissions, "Carrier")
 
 
+<<<<<<< HEAD
 def load_costs(tech_costs, config, elec_config, Nyears=1):
     """
     Set all asset costs and other parameters.
@@ -197,6 +255,40 @@ def load_costs(tech_costs, config, elec_config, Nyears=1):
             logger.info(
                 f"Overwriting {attr} of {overwrites.index} to {overwrites.values}"
             )
+=======
+# Last line of costs.csv file is totally invented, it should be reviewed.
+
+
+def load_costs(tech_costs, config, elec_config, Nyears=1):
+    """
+    set all asset costs and other parameters
+    """
+    costs = pd.read_csv(tech_costs, index_col=list(range(3))).sort_index()
+
+    # correct units to MW and EUR
+    costs.loc[costs.unit.str.contains("/kW"), "value"] *= 1e3
+    costs.loc[costs.unit.str.contains("USD"), "value"] *= config["USD2013_to_EUR2013"]
+
+    costs = (
+        costs.loc[idx[:, config["year"], :], "value"]
+        .unstack(level=2)
+        .groupby("technology")
+        .sum(min_count=1)
+    )
+
+    costs = costs.fillna(
+        {
+            "CO2 intensity": 0,
+            "FOM": 0,
+            "VOM": 0,
+            "discount rate": config["discountrate"],
+            "efficiency": 1,
+            "fuel": 0,
+            "investment": 0,
+            "lifetime": 25,
+        }
+    )
+>>>>>>> dist_main
 
     costs["capital_cost"] = (
         (
@@ -213,6 +305,7 @@ def load_costs(tech_costs, config, elec_config, Nyears=1):
     costs["marginal_cost"] = costs["VOM"] + costs["fuel"] / costs["efficiency"]
 
     costs = costs.rename(columns={"CO2 intensity": "co2_emissions"})
+<<<<<<< HEAD
     # rename because technology data & pypsa earth costs.csv use different names
     # TODO: rename the technologies in hosted tutorial data to match technology data
     costs = costs.rename(
@@ -223,15 +316,24 @@ def load_costs(tech_costs, config, elec_config, Nyears=1):
             "hydrogen underground storage": "hydrogen storage underground",
         },
     )
+=======
+>>>>>>> dist_main
 
     costs.at["OCGT", "co2_emissions"] = costs.at["gas", "co2_emissions"]
     costs.at["CCGT", "co2_emissions"] = costs.at["gas", "co2_emissions"]
 
+<<<<<<< HEAD
     costs.at["solar", "capital_cost"] = (
         config["rooftop_share"] * costs.at["solar-rooftop", "capital_cost"]
         + (1 - config["rooftop_share"]) * costs.at["solar-utility", "capital_cost"]
     )
     costs.loc["csp"] = costs.loc["csp-tower"]
+=======
+    costs.at["solar", "capital_cost"] = 0.5 * (
+        costs.at["solar-rooftop", "capital_cost"]
+        + costs.at["solar-utility", "capital_cost"]
+    )
+>>>>>>> dist_main
 
     def costs_for_storage(store, link1, link2=None, max_hours=1.0):
         capital_cost = link1["capital_cost"] + max_hours * store["capital_cost"]
@@ -243,12 +345,32 @@ def load_costs(tech_costs, config, elec_config, Nyears=1):
 
     max_hours = elec_config["max_hours"]
     costs.loc["battery"] = costs_for_storage(
+<<<<<<< HEAD
         costs.loc["battery storage"],
         costs.loc["battery inverter"],
         max_hours=max_hours["battery"],
     )
     costs.loc["H2"] = costs_for_storage(
         costs.loc["hydrogen storage tank"],
+=======
+        costs.loc[
+            "lithium"
+        ],  # line 119 in file costs.csv' which was battery storage was modified into lithium (same values left)
+        costs.loc["battery inverter"],
+        max_hours=max_hours["battery"],
+    )
+    max_hours = elec_config["max_hours"]
+    costs.loc["battery"] = costs_for_storage(
+        costs.loc[
+            "lead acid"
+        ],  # line 120 in file 'costs.csv' which was battery storage was modified into lithium (same values left)
+        costs.loc["battery inverter"],
+        max_hours=max_hours["battery"],
+    )
+
+    costs.loc["H2"] = costs_for_storage(
+        costs.loc["hydrogen storage"],
+>>>>>>> dist_main
         costs.loc["fuel cell"],
         costs.loc["electrolysis"],
         max_hours=max_hours["H2"],
@@ -259,13 +381,70 @@ def load_costs(tech_costs, config, elec_config, Nyears=1):
         if overwrites is not None:
             overwrites = pd.Series(overwrites)
             costs.loc[overwrites.index, attr] = overwrites
+<<<<<<< HEAD
             logger.info(
                 f"Overwriting {attr} of {overwrites.index} to {overwrites.values}"
             )
+=======
+>>>>>>> dist_main
 
     return costs
 
 
+<<<<<<< HEAD
+=======
+def attach_wind_and_solar(
+    n, costs, number_microgrids, input_profiles, tech_modelling, extendable_carriers
+):
+    """
+    This function adds wind and solar generators with the time series "profile_{tech}" to the power network
+    """
+
+    # Add any missing carriers from the costs data to the tech_modelling variable
+    _add_missing_carriers_from_costs(n, costs, tech_modelling)
+
+    number_microgrids = len(number_microgrids.keys())
+    microgrid_ids = [f"microgrid_{i+1}" for i in range(number_microgrids)]
+
+    # Iterate over each technology
+    for tech in tech_modelling:
+        # Iterate through each microgrid
+        # for microgrid in microgrid_ids: #TODO: review this function
+
+        # Open the dataset for the current technology from the input_profiles
+        with xr.open_dataset(getattr(snakemake.input, "profile_" + tech)) as ds:
+            # If the dataset's "bus" index is empty, skip to the next technology
+            if ds.indexes["bus"].empty:
+                continue
+
+        suptech = tech.split("-", 2)[0]
+        # Add the wind and solar generators to the power network
+        n.madd(
+            "Generator",
+            ds.indexes["bus"],
+            # {microgrid},
+            " " + tech,  # TODO: review indexes
+            # bus=f"new_bus_{microgrid}",
+            bus=ds.indexes["bus"],
+            carrier=tech,
+            p_nom_extendable=tech in extendable_carriers["Generator"],
+            p_nom_max=ds["p_nom_max"].to_pandas(),  # look at the config
+            weight=ds["weight"].to_pandas(),
+            marginal_cost=costs.at[suptech, "marginal_cost"],
+            capital_cost=costs.at[tech, "capital_cost"],
+            efficiency=costs.at[suptech, "efficiency"],
+            p_set=ds["profile"]
+            .transpose("time", "bus")
+            .to_pandas()
+            .reindex(n.snapshots),
+            p_max_pu=ds["profile"]
+            .transpose("time", "bus")
+            .to_pandas()
+            .reindex(n.snapshots),
+        )
+
+
+>>>>>>> dist_main
 def load_powerplants(ppl_fn):
     carrier_dict = {
         "ocgt": "OCGT",
@@ -273,15 +452,24 @@ def load_powerplants(ppl_fn):
         "bioenergy": "biomass",
         "ccgt, thermal": "CCGT",
         "hard coal": "coal",
+<<<<<<< HEAD
     }
     ppl = (
         read_csv_nafix(ppl_fn, index_col=0, dtype={"bus": "str"})
+=======
+        # "oil" : "diesel" #This is something that could be done
+    }
+
+    return (
+        pd.read_csv(ppl_fn, index_col=0, dtype={"bus": "str"})
+>>>>>>> dist_main
         .powerplant.to_pypsa_names()
         .powerplant.convert_country_to_alpha2()
         .rename(columns=str.lower)
         .drop(columns=["efficiency"])
         .replace({"carrier": carrier_dict})
     )
+<<<<<<< HEAD
     # drop powerplants with null capacity
     null_ppls = ppl[ppl.p_nom <= 0]
     if not null_ppls.empty:
@@ -443,6 +631,8 @@ def attach_wind_and_solar(
                 capital_cost=capital_cost,
                 efficiency=costs.at[suptech, "efficiency"],
             )
+=======
+>>>>>>> dist_main
 
 
 def attach_conventional_generators(
@@ -451,6 +641,7 @@ def attach_conventional_generators(
     ppl,
     conventional_carriers,
     extendable_carriers,
+<<<<<<< HEAD
     renewable_carriers,
     conventional_config,
     conventional_inputs,
@@ -458,6 +649,64 @@ def attach_conventional_generators(
     carriers = set(conventional_carriers) | (
         set(extendable_carriers["Generator"]) - set(renewable_carriers)
     )
+=======
+    conventional_config,
+    conventional_inputs,
+    mode="green_field",
+):
+    """
+    Attach conventional generators to the network.
+
+    Parameters
+    ----------
+    mode : str, optional
+        'green_field' -> standard behavior (default)
+        'brown_field' -> adds virtual import generators on boundary buses
+    lines_path : str, optional
+        Path to OSM lines (required if mode='brown_field')
+    shape_path : str, optional
+        Path to the shape file (required if mode='brown_field')
+    """
+    # BROWN FIELD MODE
+    if mode == "brown_field":
+        logger.info("Running in brown_field mode: adding virtual import generators...")
+
+        # Ensure 'outside' flag is available
+        if "outside" not in n.buses.columns:
+            raise ValueError(
+                "Network does not contain 'outside' flag. Please run mark_external_buses() first."
+            )
+
+        # Select buses marked as external
+        bus_ids_outside = n.buses.index[n.buses["outside"]].tolist()
+        logger.info(
+            f"Found {len(bus_ids_outside)} external connection buses (from 'outside' flag)."
+        )
+
+        # Define the marginal cost for grid import (same as OCGT reference)
+        marginal_cost = costs.at["OCGT", "marginal_cost"]
+
+        # Add virtual import generators representing external grid connection
+        n.madd(
+            "Generator",
+            [f"grid_import_{bus}" for bus in bus_ids_outside],
+            bus=bus_ids_outside,
+            carrier="grid_import",
+            p_nom_extendable=False,  # not extendable
+            p_nom=np.inf,  # effectively infinite capacity
+            marginal_cost=marginal_cost,
+            capital_cost=0.0,
+            efficiency=1.0,
+        )
+
+        logger.info(
+            f"Added {len(bus_ids_outside)} virtual grid import generators on external buses."
+        )
+        return  # skip conventional generator creation
+
+    # GREEN FIELD MODE (standard behavior)
+    carriers = set(conventional_carriers) | set(extendable_carriers["Generator"])
+>>>>>>> dist_main
     _add_missing_carriers_from_costs(n, costs, carriers)
 
     ppl = (
@@ -467,11 +716,15 @@ def attach_conventional_generators(
     )
     ppl["efficiency"] = ppl.efficiency.fillna(ppl.efficiency)
 
+<<<<<<< HEAD
     logger.info(
         "Adding {} generators with capacities [GW] \n{}".format(
             len(ppl), ppl.groupby("carrier").p_nom.sum().div(1e3).round(2)
         )
     )
+=======
+    buses_i = n.buses.index
+>>>>>>> dist_main
 
     n.madd(
         "Generator",
@@ -480,7 +733,12 @@ def attach_conventional_generators(
         bus=ppl.bus,
         p_nom_min=ppl.p_nom.where(ppl.carrier.isin(conventional_carriers), 0),
         p_nom=ppl.p_nom.where(ppl.carrier.isin(conventional_carriers), 0),
+<<<<<<< HEAD
         p_nom_extendable=ppl.carrier.isin(extendable_carriers["Generator"]),
+=======
+        p_nom_extendable=ppl.carrier.isin(extendable_carriers["Generator"])
+        | (ppl.carrier == "diesel"),
+>>>>>>> dist_main
         efficiency=ppl.efficiency,
         marginal_cost=ppl.marginal_cost,
         capital_cost=ppl.capital_cost,
@@ -489,6 +747,7 @@ def attach_conventional_generators(
     )
 
     for carrier in conventional_config:
+<<<<<<< HEAD
         # Generators with technology affected
         idx = n.generators.query("carrier == @carrier").index
 
@@ -499,11 +758,19 @@ def attach_conventional_generators(
                 # Values affecting generators of technology k country-specific
                 # First map generator buses to countries; then map countries to p_max_pu
                 values = read_csv_nafix(values, index_col=0).iloc[:, 0]
+=======
+        idx = n.generators.query("carrier == @carrier").index
+        for attr in list(set(conventional_config[carrier]) & set(n.generators)):
+            values = conventional_config[carrier][attr]
+            if f"conventional_{carrier}_{attr}" in conventional_inputs:
+                values = pd.read_csv(values, index_col=0).iloc[:, 0]
+>>>>>>> dist_main
                 bus_values = n.buses.country.map(values)
                 n.generators[attr].update(
                     n.generators.loc[idx].bus.map(bus_values).dropna()
                 )
             else:
+<<<<<<< HEAD
                 # Single value affecting all generators of technology k indiscriminantely of country
                 n.generators.loc[idx, attr] = values
 
@@ -839,10 +1106,89 @@ def add_nice_carrier_names(n, config):
             f"tech_colors for carriers {missing_i} not defined " "in config."
         )
     n.carriers["color"] = colors
+=======
+                n.generators.loc[idx, attr] = values
+
+
+def attach_storageunits(
+    n, costs, number_microgrids, technologies, extendable_carriers, mode=None
+):
+    """
+    Add different types of storage units to the power network.
+    """
+
+    elec_opts = snakemake.config["electricity"]
+    max_hours = elec_opts["max_hours"]
+
+    lookup_store = {"H2": "electrolysis", "battery": "battery inverter"}
+    lookup_dispatch = {"H2": "fuel cell", "battery": "battery inverter"}
+
+    microgrid_ids = [f"microgrid_{i+1}" for i in range(len(number_microgrids))]
+
+    # BROWN FIELD MODE: add batteries to all buses
+    if mode == "brown_field":
+        logger.info("Running in brown_field mode: adding batteries to all buses")
+
+        for tech in technologies:
+            if tech not in ["battery", "lithium", "lead acid"]:
+                continue
+            n.madd(
+                "StorageUnit",
+                [f"{tech}_{bus}" for bus in n.buses.index],
+                bus=n.buses.index,
+                carrier="battery",
+                p_nom_extendable=True,
+                capital_cost=costs.at["battery", "capital_cost"],
+                marginal_cost=costs.at["battery", "marginal_cost"],
+                efficiency_store=costs.at[lookup_store["battery"], "efficiency"],
+                efficiency_dispatch=costs.at[lookup_dispatch["battery"], "efficiency"],
+                max_hours=max_hours["battery"],
+                cyclic_state_of_charge=True,
+            )
+
+        logger.info(f"Added {len(n.buses.index)} battery storage units (one per bus).")
+        logger.info(f"Total storage units: {len(n.storage_units)}")
+
+    # GREEN FIELD MODE (default behavior)
+    else:
+        for tech in technologies:
+            for microgrid in microgrid_ids:
+                n.madd(
+                    "StorageUnit",
+                    [microgrid + "_" + tech],
+                    bus=[f"{microgrid}_gen_bus"],
+                    carrier=tech,
+                    p_nom_extendable=True,
+                    capital_cost=costs.at[tech, "capital_cost"],
+                    marginal_cost=costs.at[tech, "marginal_cost"],
+                    efficiency_store=costs.at[lookup_store["battery"], "efficiency"],
+                    efficiency_dispatch=costs.at[
+                        lookup_dispatch["battery"], "efficiency"
+                    ],
+                    max_hours=max_hours["battery"],
+                    cyclic_state_of_charge=True,
+                )
+
+        logger.info(
+            f"Added {len(technologies) * len(microgrid_ids)} storage units for microgrids."
+        )
+        logger.info(f"Total storage units: {len(n.storage_units)}")
+
+    return n  # return the modified network
+
+
+def attach_load(n, load_file, tech_modelling):
+    # Upload the load csv file
+    demand_df = pd.read_csv(load_file, index_col=0, parse_dates=True)
+
+    # Attach load to the central bus of each microgrid
+    n.madd("Load", demand_df.columns, bus=demand_df.columns, p_set=demand_df)
+>>>>>>> dist_main
 
 
 if __name__ == "__main__":
     if "snakemake" not in globals():
+<<<<<<< HEAD
         from _helpers import mock_snakemake
 
         snakemake = mock_snakemake("add_electricity")
@@ -886,10 +1232,48 @@ if __name__ == "__main__":
     conventional_inputs = {
         k: v for k, v in snakemake.input.items() if k.startswith("conventional_")
     }
+=======
+        from _helpers_dist import mock_snakemake
+
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        snakemake = mock_snakemake("add_electricity")
+        sets_path_to_root("pypsa-distribution")
+
+    configure_logging(snakemake)
+
+    n = pypsa.Network(snakemake.input.create_network)
+    Nyears = n.snapshot_weightings.objective.sum() / 8760.0
+
+    load_file = snakemake.input["load_file"]
+    mode = snakemake.params["mode"]
+    ppl = load_powerplants(snakemake.input.powerplants)
+
+    costs = load_costs(
+        snakemake.input.tech_costs,
+        snakemake.config["costs"],
+        snakemake.config["electricity"],
+        Nyears,
+    )
+
+    attach_wind_and_solar(
+        n,
+        costs,
+        snakemake.config["microgrids_list"],
+        snakemake.input,
+        snakemake.config["tech_modelling"]["general_vre"],
+        snakemake.config["electricity"]["extendable_carriers"],
+    )
+
+    conventional_inputs = {
+        k: v for k, v in snakemake.input.items() if k.startswith("conventional_")
+    }
+
+>>>>>>> dist_main
     attach_conventional_generators(
         n,
         costs,
         ppl,
+<<<<<<< HEAD
         conventional_carriers,
         extendable_carriers,
         renewable_carriers,
@@ -928,4 +1312,29 @@ if __name__ == "__main__":
         sanitize_locations(n)
 
     n.meta = snakemake.config
+=======
+        snakemake.config["electricity"]["conventional_carriers"],
+        snakemake.config["electricity"]["extendable_carriers"],
+        snakemake.config.get("conventional", {}),
+        conventional_inputs,
+        mode,
+    )
+
+    attach_storageunits(
+        n,
+        costs,
+        snakemake.config["microgrids_list"],
+        snakemake.config["tech_modelling"]["storage_techs"],
+        snakemake.config["electricity"]["extendable_carriers"],
+        mode,
+    )
+    a = 12
+
+    attach_load(
+        n,
+        load_file,
+        snakemake.config["tech_modelling"]["load_carriers"],
+    )
+
+>>>>>>> dist_main
     n.export_to_netcdf(snakemake.output[0])
