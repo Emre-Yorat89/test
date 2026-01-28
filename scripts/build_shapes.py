@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
 # SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 # -*- coding: utf-8 -*-
+
 
 import multiprocessing as mp
 import os
@@ -33,7 +33,7 @@ from numba.core import types
 from numba.typed import Dict
 from rasterio.mask import mask
 from rasterio.windows import Window
-from shapely.geometry import MultiPolygon
+from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
 from shapely.validation import make_valid
 from tqdm import tqdm
@@ -1377,18 +1377,6 @@ def crop_country(gadm_shapes, subregion_config):
         crs=offshore_shapes.crs,
         geometry=country_shapes_new.geometry,
     )
-=======
-import logging
-import os
-
-import geopandas as gpd
-import pandas as pd
-from _helpers_dist import configure_logging, save_to_geojson, sets_path_to_root
-from shapely.geometry import Polygon
-
-_logger = logging.getLogger(__name__)
-_logger.setLevel(logging.INFO)
-
 
 def create_microgrid_shapes(microgrids_list, output_path, country_code):
     """
@@ -1505,12 +1493,10 @@ def create_bus_regions(microgrids_list, output_path, country_code):
 
     # Save the GeoDataFrame to a GeoJSON file
     save_to_geojson(microgrid_gdf, output_path)
->>>>>>> dist_main
 
 
 if __name__ == "__main__":
     if "snakemake" not in globals():
-<<<<<<< HEAD
         from _helpers import mock_snakemake
 
         snakemake = mock_snakemake("build_shapes")
@@ -1590,14 +1576,6 @@ if __name__ == "__main__":
         subregion_shapes = pd.DataFrame()
 
     save_to_geojson(subregion_shapes, out.subregion_shapes)
-=======
-        from _helpers_dist import mock_snakemake
-
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        snakemake = mock_snakemake("build_shapes")
-        sets_path_to_root("pypsa-distribution")
-
-    configure_logging(snakemake)
     country_code = snakemake.params["countries"]
 
     create_microgrid_shapes(
@@ -1611,4 +1589,3 @@ if __name__ == "__main__":
         snakemake.output["microgrid_bus_shapes"],
         country_code=country_code,
     )
->>>>>>> dist_main
