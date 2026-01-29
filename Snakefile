@@ -260,6 +260,7 @@ rule build_shapes:
         crs=config["crs"],
         countries=config["countries"],
         subregion=config["subregion"],
+        pypsa_distribution_shape = config["enable"]["run_distribution"],
     input:
         # naturalearth='data/bundle/naturalearth/ne_10m_admin_0_countries.shp',
         # eez='data/bundle/eez/World_EEZ_v8_2014.shp',

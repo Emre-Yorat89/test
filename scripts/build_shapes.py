@@ -1578,13 +1578,14 @@ if __name__ == "__main__":
     save_to_geojson(subregion_shapes, out.subregion_shapes)
     country_code = snakemake.params["countries"]
 
-    create_microgrid_shapes(
+    if snakemake.params.pypsa_distribution_shape == True:
+        create_microgrid_shapes(
         snakemake.config["microgrids_list"],
         snakemake.output["microgrid_shapes"],
         country_code=country_code,
     )
 
-    create_bus_regions(
+        create_bus_regions(
         snakemake.config["microgrids_list"],
         snakemake.output["microgrid_bus_shapes"],
         country_code=country_code,
